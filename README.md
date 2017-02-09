@@ -1,42 +1,19 @@
-React Boilerplate
+React Chat App
 =====================
 
-A minimal and light dev environment for ReactJS.
+1. Installation
 
-### Usage
+Clone repository
 
-Clone the boilerplate and create your own git repo.
+npm install in root of project, and also in /chatty-server
 
-```
-git clone git@github.com:lighthouse-labs/react-simple-boilerplate.git
-git remote rm origin
-git remote add origin [YOUR NEW REPOSITORY]
-# Manually update your package.json file
-```
+2. Usage
 
-Install the dependencies and start the server.
+Users can submit messages, which will immediately be displayed to all users. If the message contains a url for an image, that image will be displayed in the message. Notifications are displayed when a user changes their username.
 
-```
-npm install
-npm start
-open http://localhost:3000
-```
+Users are assigned random colours, and the total number of users online are displayed in the nav-bar.
 
-### Static Files
-
-You can store static files like images, fonts, etc in the `build` folder.
-
-For example, if you copy a file called my_image.png into the build folder you can access it using `http://localhost:3000/build/my_image.png`.
-
-### Linting
-
-This boilerplate project includes React ESLint configuration.
-
-```
-npm run lint
-```
-
-### Dependencies
+3. Dependencies
 
 * React
 * Webpack

@@ -1,5 +1,3 @@
-// server.js
-
 const express = require('express');
 const WebSocket = require('ws');
 const SocketServer = require('ws').Server;
@@ -46,6 +44,7 @@ wss.on('connection', function connection(pipeline) {
   pipeline.send(JSON.stringify({type: "changeColour", colour: colour}));
 
   pipeline.on('message', function incoming(data) {
+    //Handle messages received from client, and broadcast to all all clients
     let message = JSON.parse(data);
 
     if (message.type === "postMessage") {
