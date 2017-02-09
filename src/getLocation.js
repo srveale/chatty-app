@@ -2,7 +2,6 @@ const getLocation = function (href) {
     console.log('href', href);
 
     var match = href.match(/^(https?\:)\/\/(([^:\/?#]*)(?:\:([0-9]+))?)([\/]{0,1}[^?#]*)(\?[^#]*|)(#.*|)$/);
-    console.log('match', match);
     return match && {
         protocol: match[1] || '',
         host: match[2] || '',

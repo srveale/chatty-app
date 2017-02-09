@@ -16,9 +16,8 @@ class MessageList extends Component {
             <span className="message-content"
                   key={this.props.messages.indexOf(message) + 'content'}>
                   {message.content}
-                  if (message.img) {
-                    <img src={message.img}/>
-                  }
+                  {message.img &&
+                  <img src={message.img} style={{'maxWidth': '60%'}}/>}
             </span>
           </div>
         )}

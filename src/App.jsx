@@ -2,35 +2,8 @@ import React, {Component} from 'react';
 import ChatBar from './ChatBar.jsx';
 import Message from './Message.jsx';
 import index from './index.jsx';
-// import getLocation from './url_parser.js';
-
-const getLocation = function (href) {
-    console.log('href', href);
-
-    var match = href.match(/^(https?\:)\/\/(([^:\/?#]*)(?:\:([0-9]+))?)([\/]{0,1}[^?#]*)(\?[^#]*|)(#.*|)$/);
-    return match && {
-        protocol: match[1] || '',
-        host: match[2] || '',
-        hostname: match[3] || '',
-        port: match[4] || '',
-        pathname: match[5] || '',
-        search: match[6] || '',
-        hash: match[7] || ''
-    }
-}
-
-const getURL = function (content) {
-  let result = false;
-  content.split(' ').forEach(function (word) {
-    var match = word.match(/^(https?\:)\/\/(([^:\/?#]*)(?:\:([0-9]+))?)([\/]{0,1}[^?#]*)(\?[^#]*|)(#.*|)$/);
-
-    if (match) {
-      result = word;
-    }
-
-  })
-  return result
-}
+let getLocation = require('./getLocation').getLocation;
+let getURL = require('./getURL').getURL;
 
 class App extends Component {
 
@@ -65,24 +38,18 @@ class App extends Component {
       notification: '',
       clientCount: 0
     };
-
-    // this.changeName = this.changeName.bind(this);  //this breaks the whole thing
+    getLocation = getLocation.bind(this);
+    getURL = getURL.bind(this);
   }
 
   componentDidMount() {
 
     const socketServer = new WebSocket("ws://localhost:4000");
-
     this.socket = socketServer;
-
     console.log("componentDidMount <App />");
 
     this.socket.onmessage = (event) => {
-
       const data = JSON.parse(event.data);
-      console.log('data type', data.type);
-      console.log('event.data', event.data);
-
 
       switch(data.type) {
 
@@ -159,3 +126,5 @@ class App extends Component {
   }
 }
 export default App;
+
+//https://en.wikipedia.org/wiki/File:June_odd-eyed-cat.jpg
