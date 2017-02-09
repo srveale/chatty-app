@@ -13,6 +13,15 @@ body {
   margin: 70px 0;
 }
 
+.clientCount {
+  float: right;
+  font-size: 16px;
+  height: 60px;
+  line-height: 60px;
+  white-space: nowrap;
+
+}
+
 .chatbar {
   background: tomato;
   border-top: 1px solid black;

@@ -6,8 +6,20 @@ class MessageList extends Component {
       <div>
         {this.props.messages.map(message =>
           <div key={this.props.messages.indexOf(message) + '-div'}>
-            <span className="message-username" key={this.props.messages.indexOf(message) + 'uname'}>{message.username}</span>
-            <span className="message-content" key={this.props.messages.indexOf(message) + 'content'}>{message.content}</span>
+
+            <span  className="message-username"
+                   style={{'color': message.colour}}
+                   key={this.props.messages.indexOf(message) + 'uname'}>
+                   {message.username}
+            </span>
+
+            <span className="message-content"
+                  key={this.props.messages.indexOf(message) + 'content'}>
+                  {message.content}
+                  if (message.img) {
+                    <img src={message.img}/>
+                  }
+            </span>
           </div>
         )}
       </div>

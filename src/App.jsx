@@ -2,6 +2,35 @@ import React, {Component} from 'react';
 import ChatBar from './ChatBar.jsx';
 import Message from './Message.jsx';
 import index from './index.jsx';
+// import getLocation from './url_parser.js';
+
+const getLocation = function (href) {
+    console.log('href', href);
+
+    var match = href.match(/^(https?\:)\/\/(([^:\/?#]*)(?:\:([0-9]+))?)([\/]{0,1}[^?#]*)(\?[^#]*|)(#.*|)$/);
+    return match && {
+        protocol: match[1] || '',
+        host: match[2] || '',
+        hostname: match[3] || '',
+        port: match[4] || '',
+        pathname: match[5] || '',
+        search: match[6] || '',
+        hash: match[7] || ''
+    }
+}
+
+const getURL = function (content) {
+  let result = false;
+  content.split(' ').forEach(function (word) {
+    var match = word.match(/^(https?\:)\/\/(([^:\/?#]*)(?:\:([0-9]+))?)([\/]{0,1}[^?#]*)(\?[^#]*|)(#.*|)$/);
+
+    if (match) {
+      result = word;
+    }
+
+  })
+  return result
+}
 
 class App extends Component {
 
@@ -9,22 +38,35 @@ class App extends Component {
     super(props);
     this.state = {
       enterMessage: function(e) {
-          if (e.key === 'Enter') {
-            this.socket.send(JSON.stringify({ type: 'postMessage', username: this.state.currentUser.name, content: e.target.value}));
-          }
+        if (e.key === 'Enter') {
+          this.socket.send(JSON.stringify(
+                { type: 'postMessage',
+                  username: this.state.currentUser.name,
+                  content: e.target.value,
+                  colour: window.colour
+                })
+          );
+        }
       }.bind(this),
 
       changeName: function(e) {
         if (e.key === 'Enter') {
+          this.socket.send(JSON.stringify(
+            {"type": "postNotification",
+             "content": `${this.state.currentUser.name} has changed their name to ${e.target.value}.`
+            })
+          );
           this.setState({currentUser: {name: e.target.value}});
-          this.socket.send(JSON.stringify({"type": "postNotification", "content": `${this.state.currentUser} has changed their name to ${e.target.value}.`}));
         }
       }.bind(this),
 
       currentUser: {name: "Bob"}, // optional. if currentUser is not defined, it means the user is Anonymous
       messages: [],
-      notification: ''
+      notification: '',
+      clientCount: 0
     };
+
+    // this.changeName = this.changeName.bind(this);  //this breaks the whole thing
   }
 
   componentDidMount() {
@@ -36,22 +78,53 @@ class App extends Component {
     console.log("componentDidMount <App />");
 
     this.socket.onmessage = (event) => {
+
       const data = JSON.parse(event.data);
+      console.log('data type', data.type);
       console.log('event.data', event.data);
 
+
       switch(data.type) {
+
       case "incomingMessage":
 
-        const newMessage = {username: data.username, content :data.content};
+        let url = getURL(data.content);
+        let isImage = false;
+        if (url) {
+          let pathname = getLocation(url).pathname;
+          if (['png', 'jpg', 'gif', 'jpeg'].indexOf(pathname.split('.').pop()) > -1) {
+            isImage = true;
+            data.content = data.content.replace(url, '');
+          }
+        }
+
+        const newMessage = {username: data.username,
+                            content: data.content,
+                            colour: data.colour,
+                            img: isImage ? url : null};
+
         const messages = this.state.messages.concat(newMessage);
         this.setState({messages: messages});
         break;
 
       case "incomingNotification":
-        const notification = data.content;
-        this.setSate({notification: notification});
+        console.log('this in incoming notification', this);
 
+        console.log('data.content', data.content);
+        const notification = data.content;
+        this.setState({notification: data.content});
         break;
+
+      case "clientCount":
+
+        this.setState({clientCount: data.count})
+        break;
+
+      case "changeColour":
+        window.colour = data.colour;
+        // $("#" + data.).css({"background-color": data.color});
+        break
+
       default:
         // show an error in the console if the message type is unknown
         throw new Error("Unknown event type " + data.type);
@@ -65,6 +138,13 @@ class App extends Component {
   render() {
     return (
       <div>
+        <nav className="navbar">
+          <a href="/" className="navbar-brand">Chatty</a>
+          <span className="clientCount">
+            Active users: {this.state.clientCount}
+          </span>
+        </nav>
+
         <div className="message system">
           {this.state.notification}
         </div>
